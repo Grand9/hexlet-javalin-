@@ -1,12 +1,12 @@
 @import gg.jte.Content
-@param User user
+@param Content content
 
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Details</title>
+    <title>My Website</title>
 </head>
 <body>
 <header>
@@ -18,13 +18,10 @@
     </nav>
 </header>
 <main>
-    <h1>Детали пользователя</h1>
-    <p>ID: ${user.getId()}</p>
-    <p>Имя: ${user.getFirstName()} ${user.getLastName()}</p>
-    <p>Email: ${user.getEmail()}</p>
+    ${content}
 </main>
 <footer>
-    <p>&copy; 2023 My Website. Developed by <a href="https://github.com/Grand9">Grand9</a>.</p>
+    <p>&copy; 2024 My Website. Developed by <a href="https://github.com/Grand9">Grand9</a>.</p>
 </footer>
 </body>
 </html>

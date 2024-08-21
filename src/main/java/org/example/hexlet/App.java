@@ -1,8 +1,13 @@
 package org.example.hexlet;
 
+import exercise.dto.courses.BuildCoursePage;
+import exercise.dto.users.BuildUserPage;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
+import io.javalin.validation.ValidationException;
+import org.example.hexlet.repository.CourseRepository;
+import org.example.hexlet.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,37 +28,40 @@ public final class App {
             config.fileRenderer(new JavalinJte());
         });
 
-        // Добавьте маршрут для тестирования шаблона test.jte
+        // Маршрут для тестирования шаблона test.jte
         app.get("/test", ctx -> {
             var testData = new TestData("Hello, JTE!");
             ctx.render("test.jte", model("testData", testData));
         });
 
-        // Обработка формы для создания пользователей
-        app.get("/users/build", ctx -> {
-            ctx.render("users/build.jte");
+        // Форма создания пользователя
+        app.get(NamedRoutes.buildUserPath(), ctx -> {
+            var page = new BuildUserPage();
+            ctx.render("users/build.jte", model("page", page));
         });
 
-        app.post("/users", ctx -> {
-            var name = ctx.formParam("name").trim();
-            var email = ctx.formParam("email").trim().toLowerCase();
-            var password = ctx.formParam("password");
-            var passwordConfirmation = ctx.formParam("passwordConfirmation");
+        // Обработка формы создания пользователя с валидацией
+        app.post(NamedRoutes.usersPath(), ctx -> {
+            var name = ctx.formParam("name");
+            var email = ctx.formParam("email");
 
-            if (!password.equals(passwordConfirmation)) {
-                ctx.status(400);
-                ctx.result("Пароли не совпадают");
-                return;
+            try {
+                var passwordConfirmation = ctx.formParam("passwordConfirmation");
+                var password = ctx.formParamAsClass("password", String.class)
+                        .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
+                        .check(value -> value.length() > 6, "У пароля недостаточная длина")
+                        .get();
+                var user = new User(name, email, password);
+                UserRepository.save(user);
+                ctx.redirect(NamedRoutes.usersPath());
+            } catch (ValidationException e) {
+                var page = new BuildUserPage(name, email, e.getErrors());
+                ctx.render("users/build.jte", model("page", page));
             }
-
-            var newId = USERS.size() + 1L;
-            var user = new User(newId, name, email, password);
-            USERS.add(user);
-            ctx.redirect("/users");
         });
 
         // Просмотр пользователя по ID
-        app.get("/users/{id}", ctx -> {
+        app.get(NamedRoutes.userPath(1L), ctx -> { // Пример использования с конкретным ID
             var id = ctx.pathParamAsClass("id", Long.class).get();
             User user = USERS.stream()
                     .filter(u -> id.equals(u.getId()))
@@ -64,10 +72,31 @@ public final class App {
         });
 
         // Просмотр списка пользователей
-        app.get("/users", ctx -> ctx.render("members.jte", model("users", USERS)));
+        app.get(NamedRoutes.usersPath(), ctx -> ctx.render("members.jte", model("users", USERS)));
 
         // Главная страница
         app.get("/", ctx -> ctx.render("index.jte"));
+
+        // Обработка формы создания курса с валидацией
+        app.post(NamedRoutes.coursesPath(), ctx -> {
+            var name = ctx.formParam("name");
+            var description = ctx.formParam("description");
+
+            try {
+                name = ctx.formParamAsClass("name", String.class)
+                        .check(value -> value.length() > 2, "Название курса должно быть длиннее 2 символов")
+                        .get();
+                description = ctx.formParamAsClass("description", String.class)
+                        .check(value -> value.length() > 10, "Описание курса должно быть длиннее 10 символов")
+                        .get();
+                var course = new Course(name, description);
+                CourseRepository.save(course);
+                ctx.redirect(NamedRoutes.coursesPath());
+            } catch (ValidationException e) {
+                var page = new BuildCoursePage(name, description, e.getErrors());
+                ctx.render("courses/build.jte", model("page", page));
+            }
+        });
 
         return app;
     }

@@ -10,8 +10,8 @@
 <header>
     <nav>
         <ul>
-            <li><a href="/">Главная</a></li>
-            <li><a href="/courses">Курсы</a></li>
+            <li><a href="${org.example.hexlet.NamedRoutes.usersPath()}">Главная</a></li>
+            <li><a href="${org.example.hexlet.NamedRoutes.coursesPath()}">Курсы</a></li>
         </ul>
     </nav>
     <h1>Grand9</h1>

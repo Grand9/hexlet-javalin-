@@ -1,37 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create User</title>
-</head>
-<body>
-<h1>Create New User</h1>
+@import exercise.dto.users.BuildUserPage
+@param BuildUserPage page
+
+@if(page.getErrors() != null)
+    <ul>
+        @for(var validator : page.getErrors().values())
+            @for(var error : validator)
+                <li>${error.getMessage()}</li>
+            @endfor
+        @endfor
+    </ul>
+@endif
+
 <form action="/users" method="post">
     <div>
         <label>
-            Name
-            <input type="text" name="name" required />
+            Имя
+            <input type="text" name="name" value="${page.getName()}" />
         </label>
     </div>
     <div>
         <label>
             Email
-            <input type="email" name="email" required />
+            <input type="email" required name="email" value="${page.getEmail()}" />
         </label>
     </div>
     <div>
         <label>
-            Password
-            <input type="password" name="password" required />
+            Пароль
+            <input type="password" required name="password" />
         </label>
     </div>
     <div>
         <label>
-            Confirm Password
-            <input type="password" name="passwordConfirmation" required />
+            Подтверждение пароля
+            <input type="password" required name="passwordConfirmation" />
         </label>
     </div>
-    <input type="submit" value="Register" />
+    <input type="submit" value="Зарегистрировать" />
 </form>
-</body>
-</html>

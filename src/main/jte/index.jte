@@ -1,27 +1,21 @@
-@import gg.jte.Content
-@param Content content
+@param exercise.dto.MainPage page
 
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My Website</title>
+    <title>Hello Hexlet!</title>
 </head>
 <body>
-<header>
-    <nav>
-        <ul>
-            <li><a href="/">Главная страница</a></li>
-            <li><a href="/users">Все пользователи</a></li>
-        </ul>
-    </nav>
-</header>
 <main>
-    ${content}
+    <h1>Привет, Хекслет!</h1>
+    @if(page.getCurrentUser() != null)
+        Добро пожаловать, ${page.getCurrentUser()}.
+        Чтобы разлогиниться, удалите куку JSESSIONID из браузера
+    @endif
+    <a href="${org.example.hexlet.NamedRoutes.sessionsBuildPath()}">Login</a>
 </main>
-<footer>
-    <p>&copy; 2024 My Website. Developed by <a href="https://github.com/Grand9">Grand9</a>.</p>
-</footer>
 </body>
 </html>
+

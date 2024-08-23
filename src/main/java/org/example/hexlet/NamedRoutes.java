@@ -1,28 +1,37 @@
 package org.example.hexlet;
 
-public class NamedRoutes {
+public final class NamedRoutes {
 
-    // Маршрут для формы создания пользователя
-    public static String buildUserPath() {
-        return "/users/build";
+    public static String sessionsPath() {
+        return "/sessions";
     }
 
-    // Маршрут для обработки формы создания пользователя
+    public static String sessionsBuildPath() {
+        return "/sessions/build";
+    }
+
+    // Пользователи
     public static String usersPath() {
         return "/users";
     }
 
-    // Маршрут для просмотра пользователя по ID
-    public static String userPath(Long id) {
+    public static String userPath(String id) {
         return "/users/" + id;
     }
 
-    // Маршрут для создания курса
+    public static String buildUserPath() {
+        return "/users/build";
+    }
+
+    // Курсы
     public static String coursesPath() {
         return "/courses";
     }
 
-    // Маршрут для формы создания курса
+    public static String coursePath(String id) {
+        return "/courses/" + id;
+    }
+
     public static String buildCoursePath() {
         return "/courses/build";
     }

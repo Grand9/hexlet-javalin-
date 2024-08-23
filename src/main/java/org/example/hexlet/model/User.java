@@ -1,4 +1,4 @@
-package org.example.hexlet;
+package org.example.hexlet.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

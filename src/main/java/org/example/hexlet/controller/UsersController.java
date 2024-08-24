@@ -17,9 +17,12 @@ public class UsersController {
 
     public static void index(Context ctx) {
         var users = UserRepository.getEntities();
+        String flash = ctx.consumeSessionAttribute("flash");
         var page = new UsersPage(users);
+        page.setFlash(flash);
         ctx.render("users/index.jte", model("page", page));
     }
+
 
     public static void show(Context ctx) {
         var id = ctx.pathParamAsClass("id", Long.class).get();
@@ -46,12 +49,14 @@ public class UsersController {
                     .get();
             var user = new User(name, email, validatedPassword);
             UserRepository.save(user);
+            ctx.sessionAttribute("flash", "User successfully created!");
             ctx.redirect(NamedRoutes.usersPath());
         } catch (ValidationException e) {
             var page = new BuildUserPage(name, email, e.getErrors());
             ctx.render("users/build.jte", model("page", page));
         }
     }
+
 
     public static void edit(Context ctx) {
         var id = ctx.pathParamAsClass("id", Long.class).get();
@@ -74,8 +79,10 @@ public class UsersController {
         user.setEmail(email);
         user.setPassword(password);
         UserRepository.save(user);
+        ctx.sessionAttribute("flash", "User successfully updated!");
         ctx.redirect(NamedRoutes.usersPath());
     }
+
 
     public static void destroy(Context ctx) {
         var id = ctx.pathParamAsClass("id", Long.class).get();

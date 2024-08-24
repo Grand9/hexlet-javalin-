@@ -1,27 +1,40 @@
 package org.example.hexlet;
 
-import exercise.dto.MainPage;
-import org.example.hexlet.controller.SessionsController;
-
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
+import org.example.hexlet.repository.BaseRepository;
 
-import static io.javalin.rendering.template.TemplateUtil.model;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 public class HelloWorld {
-    public static void main(String[] args) {
-        var app = Javalin.create(config -> {
+
+    public static void main(String[] args) throws Exception {
+        Javalin app = getApp();
+        app.start(7070);
+    }
+
+    public static Javalin getApp() throws Exception {
+        var hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+
+        var dataSource = new HikariDataSource(hikariConfig);
+
+        var url = HelloWorld.class.getClassLoader().getResourceAsStream("schema.sql");
+        var sql = new BufferedReader(new InputStreamReader(url))
+                .lines().collect(Collectors.joining("\n"));
+
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+
+        BaseRepository.dataSource = dataSource;
+
+        return Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
         });
-
-        app.get("/", ctx -> {
-            var page = new MainPage(ctx.sessionAttribute("currentUser"));
-            ctx.render("index.jte", model("page", page));
-        });
-
-        app.get("/sessions/build", SessionsController::build);
-        app.post("/sessions", SessionsController::create);
-        app.delete("/sessions", SessionsController::destroy);
-
-        app.start(7070);
     }
 }

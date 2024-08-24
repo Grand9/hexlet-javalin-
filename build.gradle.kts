@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.h2database:h2:2.2.220")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("net.datafaker:datafaker:2.0.2")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
